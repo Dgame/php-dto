@@ -1,0 +1,63 @@
+{
+    "name": "dgame/php-dto",
+    "type": "package",
+    "description": "",
+    "keywords": [],
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Randy Schütt",
+            "email": "randy.schuett@statista.com"
+        },
+        {
+            "name": "Sven Breuer",
+            "email": "sven.breuer@statista.com"
+        }
+    ],
+    "require": {
+        "php": "^8.0"
+    },
+    "require-dev": {
+        "ergebnis/composer-normalize": "^2.4",
+        "php-parallel-lint/php-parallel-lint": "^1.2",
+        "phpstan/phpstan": "^0.12",
+        "phpstan/phpstan-deprecation-rules": "^0.12",
+        "phpstan/phpstan-strict-rules": "^0.12",
+        "phpunit/phpunit": "^9.4",
+        "roave/security-advisories": "dev-latest",
+        "slevomat/coding-standard": "dev-master",
+        "spaceemotion/php-coding-standard": "dev-master",
+        "symplify/easy-coding-standard": "^9.3",
+        "thecodingmachine/phpstan-safe-rule": "^1.0"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "8.0"
+        },
+        "preferred-install": "dist",
+        "process-timeout": 0,
+        "sort-packages": true
+    },
+    "autoload": {
+        "psr-4": {
+            "Dgame\\DataTransferObject\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Dgame\\DataTransferObject\\Tests\\": "tests/"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "scripts": {
+        "coverage": "phpunit --coverage-clover=coverage",
+        "lint": "phpcstd --continue",
+        "lint:fix": "phpcstd --fix --continue",
+        "lint:fix-style": "ecs --fix",
+        "lint:static": "phpstan",
+        "lint:style": "ecs",
+        "test": "phpunit"
+    }
+}

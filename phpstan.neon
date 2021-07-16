@@ -1,0 +1,14 @@
+includes:
+    - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
+    - vendor/phpstan/phpstan-deprecation-rules/rules.neon
+    - vendor/phpstan/phpstan-strict-rules/rules.neon
+    - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+
+parameters:
+    treatPhpDocTypesAsCertain: false
+    checkInternalClassCaseSensitivity: true
+    checkTooWideReturnTypesInProtectedAndPublicMethods: true
+    checkUninitializedProperties: true
+    level: max
+    paths:
+        - src

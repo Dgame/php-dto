@@ -7,11 +7,11 @@ namespace Dgame\DataTransferObject\Tests\Stubs;
 use Dgame\DataTransferObject\Annotation\Ignore;
 use Dgame\DataTransferObject\From;
 
-final class IgnoreWithExceptionStub
+final class IgnoreStub
 {
     use From;
 
-    #[Ignore(message: 'The uuid is not supposed to be set')]
+    #[Ignore]
     public string $uuid = 'abc';
     public int $id = 0;
 }

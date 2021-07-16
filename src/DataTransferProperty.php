@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Dgame\DataTransferObject;
 
-use Dgame\DataTransferObject\Annotation\Absent;
 use Dgame\DataTransferObject\Annotation\Alias;
 use Dgame\DataTransferObject\Annotation\Ignore;
 use Dgame\DataTransferObject\Annotation\Name;
+use Dgame\DataTransferObject\Annotation\Reject;
+use Dgame\DataTransferObject\Annotation\Required;
 use InvalidArgumentException;
 use ReflectionException;
 use ReflectionMethod;
@@ -20,7 +21,7 @@ use Throwable;
  */
 final class DataTransferProperty
 {
-    private ?Ignore $ignore = null;
+    private bool $ignore;
     /** @var string[] */
     private array $names = [];
     /**
@@ -39,7 +40,7 @@ final class DataTransferProperty
     public function __construct(private ReflectionProperty $property, DataTransferObject $parent)
     {
         $property->setAccessible(true);
-        $this->setIgnore();
+        $this->ignore = $this->property->getAttributes(Ignore::class) !== [];
         $this->setNames();
 
         $this->instance = $parent->getInstance();
@@ -62,7 +63,7 @@ final class DataTransferProperty
 
     public function isIgnored(): bool
     {
-        return $this->ignore !== null;
+        return $this->ignore;
     }
 
     /**
@@ -73,10 +74,11 @@ final class DataTransferProperty
     public function ignoreIn(array &$input): void
     {
         foreach ($this->names as $name) {
-            if (array_key_exists($name, $input)) {
-                $this->ignore?->execute();
+            if (!array_key_exists($name, $input)) {
+                continue;
             }
 
+            $this->handleRejected();
             unset($input[$name]);
         }
     }
@@ -93,6 +95,8 @@ final class DataTransferProperty
                 continue;
             }
 
+            $this->handleRejected();
+
             $value = $input[$name];
             unset($input[$name]);
 
@@ -102,6 +106,8 @@ final class DataTransferProperty
             return;
         }
 
+        $this->handleRequired();
+
         if ($this->hasDefaultValue) {
             $this->assign($this->defaultValue);
 
@@ -109,6 +115,24 @@ final class DataTransferProperty
         }
 
         throw $this->getMissingException();
+    }
+
+    private function handleRejected(): void
+    {
+        foreach ($this->property->getAttributes(Reject::class) as $attribute) {
+            /** @var Reject $reject */
+            $reject = $attribute->newInstance();
+            $reject->execute();
+        }
+    }
+
+    private function handleRequired(): void
+    {
+        foreach ($this->property->getAttributes(Required::class) as $attribute) {
+            /** @var Required $required */
+            $required = $attribute->newInstance();
+            $required->execute();
+        }
     }
 
     private function getPromotedConstructorParameter(?ReflectionMethod $constructor, string $name): ?ReflectionParameter
@@ -127,16 +151,6 @@ final class DataTransferProperty
         $instance = $this->property->isStatic() ? null : $this->instance;
 
         $this->property->setValue($instance, $value);
-    }
-
-    private function setIgnore(): void
-    {
-        foreach ($this->property->getAttributes(Ignore::class) as $attribute) {
-            /** @var Ignore $ignore */
-            $ignore = $attribute->newInstance();
-            $this->ignore = $ignore;
-            break;
-        }
     }
 
     private function setNames(): void
@@ -163,13 +177,6 @@ final class DataTransferProperty
 
     private function getMissingException(): Throwable
     {
-        foreach ($this->property->getAttributes(Absent::class) as $attribute) {
-            /** @var Absent $absent */
-            $absent = $attribute->newInstance();
-
-            return $absent->getException();
-        }
-
         return match (count($this->names)) {
             0 => new InvalidArgumentException('Expected a value'),
             1 => new InvalidArgumentException('Expected a value for "' . current($this->names) . '"'),

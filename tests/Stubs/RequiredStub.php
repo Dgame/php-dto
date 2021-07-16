@@ -7,7 +7,7 @@ namespace Dgame\DataTransferObject\Tests\Stubs;
 use Dgame\DataTransferObject\Annotation\Required;
 use Dgame\DataTransferObject\From;
 
-final class AbsentStub
+final class RequiredStub
 {
     use From;
 

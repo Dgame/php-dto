@@ -8,7 +8,7 @@ use Dgame\DataTransferObject\Annotation\Ignore;
 use Dgame\DataTransferObject\Annotation\Reject;
 use Dgame\DataTransferObject\From;
 
-final class PresentStub
+final class RejectStub
 {
     use From;
 

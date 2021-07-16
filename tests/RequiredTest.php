@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Dgame\DataTransferObject\Tests;
 
-use Dgame\DataTransferObject\Tests\Stubs\AbsentStub;
+use Dgame\DataTransferObject\Tests\Stubs\RequiredStub;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use Throwable;
 
-final class AbsentTest extends TestCase
+final class RequiredTest extends TestCase
 {
     /**
      * @param array  $input
@@ -28,7 +28,7 @@ final class AbsentTest extends TestCase
             $this->expectExceptionMessage('We need an "id" to identify the class');
         }
 
-        $stub = AbsentStub::from($input);
+        $stub = RequiredStub::from($input);
         $this->assertEquals($expectedId, $stub->id);
     }
 

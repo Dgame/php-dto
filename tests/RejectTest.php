@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Dgame\DataTransferObject\Tests;
 
-use Dgame\DataTransferObject\Tests\Stubs\PresentStub;
+use Dgame\DataTransferObject\Tests\Stubs\RejectStub;
 use InvalidArgumentException;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
 use Throwable;
 
-final class PresentTest extends TestCase
+final class RejectTest extends TestCase
 {
     /**
      * @param array  $input
@@ -31,7 +31,7 @@ final class PresentTest extends TestCase
             $this->expectExceptionMessage('The attribute "new" is not supposed to be set');
         }
 
-        $stub = PresentStub::from($input);
+        $stub = RejectStub::from($input);
         $this->assertEquals('abc', $stub->uuid);
         $this->assertEquals($input['new'] ?? true, $stub->new);
         $this->assertEquals($expectedId, $stub->id);

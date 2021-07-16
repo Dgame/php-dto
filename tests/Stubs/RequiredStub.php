@@ -12,5 +12,5 @@ final class RequiredStub
     use From;
 
     #[Required(reason: 'We need an "id" to identify the class')]
-    public int $id;
+    public ?int $id;
 }

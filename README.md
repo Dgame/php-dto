@@ -2,6 +2,17 @@
 
 Want to deserialize an object with data on the fly? Go for it by using the `From` trait.
 
+---
+
+How is this package any different from [spaties](https://github.com/spatie) popular [data-transfer-object](https://github.com/spatie/data-transfer-object), you may ask?
+Well, it's not meant to be a replacement by any means. But while using it I've often come across some things I've missed since I knew them from [serde](https://serde.rs/), like renaming and ignoring properties, something the maintainer of spatie's _data-transfer-object_ [doesn't want to do](https://github.com/spatie/data-transfer-object/issues/142#issuecomment-690418112).
+So there it is, my own little DTO package :) I hope it helps someone, as it helps me in my daily work.
+Feel free to open issues or pull requests - any help is greatly appreciated!
+
+---
+
+**This package is designed for PHP &GreaterEqual; 8.0 only** since it's using [PHP 8.0 Attributes](https://stitcher.io/blog/attributes-in-php-8).
+
 ## Name
 
 You get a parameter which is not named as the parameter in your class? `#[Name(...)]` to the rescue - just specify the name from the Request:

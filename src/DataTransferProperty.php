@@ -39,7 +39,9 @@ final class DataTransferProperty
      */
     public function __construct(private ReflectionProperty $property, DataTransferObject $parent)
     {
-        $property->setAccessible(true);
+        if (version_compare(PHP_VERSION, '8.1') < 0) {
+            $property->setAccessible(true);
+        }
         $this->ignore = $this->property->getAttributes(Ignore::class) !== [];
         $this->setNames();
 
@@ -54,8 +56,7 @@ final class DataTransferProperty
                 $this->hasDefaultValue = true;
                 $this->defaultValue = $parameter->getDefaultValue();
             } else {
-                $type = $property->getType();
-                $this->hasDefaultValue = $type?->allowsNull() ?? false;
+                $this->hasDefaultValue = $property->getType()?->allowsNull() ?? false;
                 $this->defaultValue = null;
             }
         }

@@ -8,10 +8,6 @@
         {
             "name": "Randy Schütt",
             "email": "randy.schuett@statista.com"
-        },
-        {
-            "name": "Sven Breuer",
-            "email": "sven.breuer@statista.com"
         }
     ],
     "require": {
@@ -19,6 +15,7 @@
     },
     "require-dev": {
         "ergebnis/composer-normalize": "^2.4",
+        "ergebnis/phpstan-rules": "^0.15",
         "php-parallel-lint/php-parallel-lint": "^1.2",
         "phpstan/phpstan": "^0.12",
         "phpstan/phpstan-deprecation-rules": "^0.12",
@@ -27,8 +24,10 @@
         "roave/security-advisories": "dev-latest",
         "slevomat/coding-standard": "dev-master",
         "spaceemotion/php-coding-standard": "dev-master",
+        "spaze/phpstan-disallowed-calls": "^1.5",
         "symplify/easy-coding-standard": "^9.3",
-        "thecodingmachine/phpstan-safe-rule": "^1.0"
+        "thecodingmachine/phpstan-safe-rule": "^1.0",
+        "thecodingmachine/phpstan-strict-rules": "^0.12"
     },
     "config": {
         "optimize-autoloader": true,

@@ -56,6 +56,7 @@ final class DataTransferValue
         if ($type === null) {
             return;
         }
+
         if (!($type instanceof ReflectionNamedType)) {
             return;
         }

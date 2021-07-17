@@ -1,14 +1,28 @@
 includes:
     - vendor/thecodingmachine/phpstan-safe-rule/phpstan-safe-rule.neon
+    - vendor/thecodingmachine/phpstan-strict-rules/phpstan-strict-rules.neon
     - vendor/phpstan/phpstan-deprecation-rules/rules.neon
     - vendor/phpstan/phpstan-strict-rules/rules.neon
     - vendor/phpstan/phpstan/conf/bleedingEdge.neon
+    - vendor/spaze/phpstan-disallowed-calls/extension.neon
+    - vendor/spaze/phpstan-disallowed-calls/disallowed-dangerous-calls.neon
+    - vendor/spaze/phpstan-disallowed-calls/disallowed-execution-calls.neon
 
 parameters:
     treatPhpDocTypesAsCertain: false
     checkInternalClassCaseSensitivity: true
     checkTooWideReturnTypesInProtectedAndPublicMethods: true
     checkUninitializedProperties: true
+    checkMissingCallableSignature: true
     level: max
     paths:
         - src
+
+rules:
+    - Ergebnis\PHPStan\Rules\Expressions\NoCompactRule
+    - Ergebnis\PHPStan\Rules\Expressions\NoEmptyRule
+    - Ergebnis\PHPStan\Rules\Expressions\NoErrorSuppressionRule
+    - Ergebnis\PHPStan\Rules\Expressions\NoEvalRule
+    - Ergebnis\PHPStan\Rules\Expressions\NoIssetRule
+    - Ergebnis\PHPStan\Rules\Files\DeclareStrictTypesRule
+    - Ergebnis\PHPStan\Rules\Methods\PrivateInFinalClassRule

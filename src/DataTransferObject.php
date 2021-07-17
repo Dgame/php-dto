@@ -78,7 +78,7 @@ final class DataTransferObject
 
     public function getConstructor(): ?ReflectionMethod
     {
-        return $this->reflection->getConstructor();
+        return $this->constructor;
     }
 
     /**

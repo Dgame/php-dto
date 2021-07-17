@@ -102,7 +102,7 @@ $foo = Foo::from(['id' => '43']);
 
 ## Validation
 
-You want to validate the value before it is assigned? No problem. There are a few pre-defined validations prepared, but you can easily write your own by implementing the `Validation`-interface.
+You want to validate the value before it is assigned? We can do that. There are a few pre-defined validations prepared, but you can easily write your own by implementing the `Validation`-interface.
 
 ### Min
 
@@ -174,7 +174,7 @@ final class Limit
 
 ### Instance
 
-Want to make sure that a property is an instance of an certain class or that each item in an array is an instance of that said class?
+Do you want to make sure that a property is an instance of an certain class or that each item in an array is an instance of that said class?
 
 ```php
 final class Collection
@@ -186,7 +186,7 @@ final class Collection
 
 ### Custom
 
-Want you own Validation? Just implements the `Validation`-interface:
+Do you want your Validation? Just implement the `Validation`-interface:
 
 ```php
 use Dgame\DataTransferObject\Annotation\Validation;
@@ -276,7 +276,7 @@ $foo = Foo::from(['uuid' => 'xyz', 'id' => 42]); // throws 'The attribute "uuid"
 
 ## Required
 
-Normally, a nullable-property or a property with a provided default value is treatend with said default-value or null if the property cannot be assigned from the provided data.
+Normally, a nullable-property or a property with a provided default value is treated with said default-value or null if the property cannot be assigned from the provided data.
 If no default-value is provided and the property is not nullable, an error is thrown in case the property was not found.
 But in some cases you might want to specify the reason, why the property is required or even want to require an otherwise default-able property. You can do that by using `Required`:
 
@@ -302,7 +302,7 @@ Foo::from(['id' => 42]); // Fails and would fail regardless of the `Required`-At
 
 # Nested object detection
 
-You have nested objects and want to deserialise them all at once? We can do that:
+You have nested objects and want to deserialize them all at once? That is a given:
 
 ```php
 use Dgame\DataTransferObject\From;

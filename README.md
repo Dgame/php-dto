@@ -295,9 +295,9 @@ final class Foo
     public string $name;
 }
 
-$foo1 = Foo::from(['id' => 42, 'name' => 'abc']); // Works
-$foo2 = Foo::from(['name' => 'abc']); // Fails but would work without the `Required`-Attribute since $id is nullable
-$foo3 = Foo::from(['id' => 42]); // Fails and would fail regardless of the `Required`-Attribute since $name is not nullable and has no default-value - but the reason why it is required is now more clear.
+Foo::from(['id' => 42, 'name' => 'abc']); // Works
+Foo::from(['name' => 'abc']); // Fails but would work without the `Required`-Attribute since $id is nullable
+Foo::from(['id' => 42]); // Fails and would fail regardless of the `Required`-Attribute since $name is not nullable and has no default-value - but the reason why it is required is now more clear.
 ```
 
 # Nested object detection

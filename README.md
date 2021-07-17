@@ -253,7 +253,7 @@ echo $foo->uuid; // abc
 
 ## Reject
 
-You want to go a step furthger than just ignoring a value? Then `Reject` it:
+You want to go one step further than simply ignoring a value? Then `Reject` it:
 
 ```php
 use Dgame\DataTransferObject\Annotation\Reject;
@@ -277,7 +277,7 @@ $foo = Foo::from(['uuid' => 'xyz', 'id' => 42]); // throws 'The attribute "uuid"
 ## Required
 
 Normally, a nullable-property or a property with a provided default value is treatend with said default-value or null if the property cannot be assigned from the provided data.
-If no default-value is provided and the property is not nullable, an error is thrown in case the property was not found in the provided data.
+If no default-value is provided and the property is not nullable, an error is thrown in case the property was not found.
 But in some cases you might want to specify the reason, why the property is required or even want to require an otherwise default-able property. You can do that by using `Required`:
 
 ```php

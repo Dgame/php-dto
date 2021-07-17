@@ -248,7 +248,7 @@ final class Foo
 
 $foo = Foo::from(['uuid' => 'xyz', 'id' => 42]);
 echo $foo->id; // 42
-echo $foo->uuid; // xyz
+echo $foo->uuid; // abc
 ```
 
 ## Reject

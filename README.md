@@ -177,6 +177,8 @@ final class Limit
 Do you want to make sure that a property is an instance of an certain class or that each item in an array is an instance of that said class?
 
 ```php
+use Dgame\DataTransferObject\Annotation\Instance;
+
 final class Collection
 {
     #[Instance(class: Entity::class, message: 'We need an array of Entities!')]

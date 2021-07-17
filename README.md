@@ -1,6 +1,6 @@
 # Data Transfer Object
 
-Want to serialize an object with data on the fly? Go for it by using the `From` trait.
+Want to deserialize an object with data on the fly? Go for it by using the `From` trait.
 
 ## Name
 
@@ -299,3 +299,30 @@ $foo1 = Foo::from(['id' => 42, 'name' => 'abc']); // Works
 $foo2 = Foo::from(['name' => 'abc']); // Fails but would work without the `Required`-Attribute since $id is nullable
 $foo3 = Foo::from(['id' => 42]); // Fails and would fail regardless of the `Required`-Attribute since $name is not nullable and has no default-value - but the reason why it is required is now more clear.
 ```
+
+# Nested object detection
+
+You have nested objects and want to deserialise them all at once? We can do that:
+
+```php
+use Dgame\DataTransferObject\From;
+
+final class Bar
+{
+    public int $id;
+}
+
+final class Foo
+{
+    use From;
+    
+    public Bar $bar;
+}
+
+$foo = Foo::from(['bar' => ['id' => 42]]);
+echo $foo->bar->id; // 42
+```
+
+Have you noticed the missing `From` in `Bar`? `From` is just a little wrapper for the actual DTO. So your nested classes don't need to use it at all.
+
+There is no limit to the depth of nesting, the responsibility is yours! :)

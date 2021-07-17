@@ -269,7 +269,7 @@ final class Foo
 
 $foo = Foo::from(['id' => 42]); // Works fine
 echo $foo->id; // 42
-echo $foo->uuid; // xyz
+echo $foo->uuid; // abc
 
 $foo = Foo::from(['uuid' => 'xyz', 'id' => 42]); // throws 'The attribute "uuid" is not supposed to be set'
 ```

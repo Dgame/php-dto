@@ -263,7 +263,7 @@ final class Foo
 
 ### Custom
 
-Do you want your Validation? Just implement the `Validation`-interface:
+Do you want your own Validation? Just implement the `Validation`-interface:
 
 ```php
 use Dgame\DataTransferObject\Annotation\Validation;

@@ -9,9 +9,11 @@ Well, it's not meant to be a replacement by any means. But while using it I've o
 So there it is, my own little DTO package :) I hope it helps someone, as it helps me in my daily work.
 Feel free to open issues or pull requests - any help is greatly appreciated!
 
----
+### Requirements
 
-**This package is designed for PHP &GreaterEqual; 8.0 only** since it's using [PHP 8.0 Attributes](https://stitcher.io/blog/attributes-in-php-8).
+This package is designed for PHP &GreaterEqual; 8.0 only since it's using [PHP 8.0 Attributes](https://stitcher.io/blog/attributes-in-php-8).
+
+# Attributes
 
 ## Name
 

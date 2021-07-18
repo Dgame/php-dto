@@ -377,6 +377,43 @@ Foo::from(['name' => 'abc']); // Fails but would work without the `Required`-Att
 Foo::from(['id' => 42]); // Fails and would fail regardless of the `Required`-Attribute since $name is not nullable and has no default-value - but the reason why it is required is now more clear.
 ```
 
+# Property promotion
+
+In the above examples, [property promotion](https://stitcher.io/blog/constructor-promotion-in-php-8) is not used because it is more readable that way, but property promotion is supported. So the following example
+```php
+use Dgame\DataTransferObject\Annotation\Min;
+use Dgame\DataTransferObject\From;
+
+final class Limit
+{
+    use From;
+    
+    #[Min(0)]
+    public int $offset;
+    #[Min(0)]
+    public int $limit;
+}
+```
+
+can be rewritten as shown below
+
+```php
+use Dgame\DataTransferObject\Annotation\Min;
+use Dgame\DataTransferObject\From;
+
+final class Limit
+{
+    use From;
+
+    public function __construct(
+        #[Min(0)] public int $offset,
+        #[Min(0)] public int $limit
+    ) { }
+}
+```
+
+and it still works.
+
 # Nested object detection
 
 You have nested objects and want to deserialize them all at once? That is a given:

@@ -187,7 +187,7 @@ final class Limit
 
 ### Instance
 
-Do you want to make sure that a property is an instance of an certain class or that each item in an array is an instance of that said class?
+Do you want to make sure that a property is an instance of a certain class or that each item in an array is an instance of that said class?
 
 ```php
 use Dgame\DataTransferObject\Annotation\Instance;
@@ -200,6 +200,8 @@ final class Collection
 ```
 
 ### Type
+
+If you are trying to cover objects or other class instances, you should probably take a look at [Instance](#instance).
 
 As long as you specify a type for your properties, the `Type` validation is automatically added to ensure that the specified values can be assigned to the specified types. If not, a validation exception will be thrown.
 Without this validation, a `TypeError` would be thrown, which may not be desirable.

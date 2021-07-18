@@ -5,7 +5,7 @@ Want to deserialize an object with data on the fly? Go for it by using the `From
 ---
 
 How is this package any different from [spaties](https://github.com/spatie) popular [data-transfer-object](https://github.com/spatie/data-transfer-object), you may ask?
-Well, it's not meant to be a replacement by any means. But while using it I've often come across some things I've missed since I knew them from [serde](https://serde.rs/), like renaming and ignoring properties, something the maintainer of spatie's _data-transfer-object_ [doesn't want to do](https://github.com/spatie/data-transfer-object/issues/142#issuecomment-690418112).
+Well, it's not meant to be a replacement by any means. But while using it I've often come across some things I've missed since I knew them from [serde](https://serde.rs/), like renaming and ignoring properties, something that spatie's _data-transfer-object_ [might not get](https://github.com/spatie/data-transfer-object/issues/142#issuecomment-690418112) in the near future.
 So there it is, my own little DTO package :) I hope it helps someone, as it helps me in my daily work.
 Feel free to open issues or pull requests - any help is greatly appreciated!
 

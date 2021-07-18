@@ -1,13 +1,14 @@
 {
     "name": "dgame/php-dto",
     "type": "package",
-    "description": "",
-    "keywords": [],
-    "license": "proprietary",
+    "description": "A data transfer object inspired by Rust's serde",
+    "keywords": ["DTO", "data transfer object"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Randy Schütt",
-            "email": "rswhite4@gmail.com"
+            "email": "rswhite4@gmail.com",
+            "role": "lead"
         }
     ],
     "require": {

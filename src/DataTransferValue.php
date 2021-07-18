@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject;
 
 use Dgame\DataTransferObject\Annotation\Call;
+use Dgame\DataTransferObject\Annotation\Type;
 use Dgame\DataTransferObject\Annotation\Validation;
 use ReflectionAttribute;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionProperty;
+use Safe\Exceptions\StringsException;
 use Throwable;
 
 final class DataTransferValue
@@ -75,12 +77,27 @@ final class DataTransferValue
         $this->value = $dto->getInstance();
     }
 
+    /**
+     * @throws StringsException
+     */
     private function validate(): void
     {
+        $typeChecked = false;
         foreach ($this->property->getAttributes(Validation::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
             /** @var Validation $validation */
             $validation = $attribute->newInstance();
             $validation->validate($this->value);
+
+            $typeChecked = $typeChecked || $validation instanceof Type;
+        }
+
+        if ($typeChecked) {
+            return;
+        }
+
+        $type = $this->property->getType();
+        if ($type instanceof ReflectionNamedType) {
+            Type::from($type)->validate($this->value);
         }
     }
 }

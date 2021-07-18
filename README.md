@@ -199,6 +199,66 @@ final class Collection
 }
 ```
 
+### Type
+
+As long as you specify a type for your properties, the `Type` validation is automatically added to ensure that the specified values can be assigned to the specified types. If not, a validation exception will be thrown.
+Without this validation, a `TypeError` would be thrown, which may not be desirable.
+
+So this code
+```php
+final class Foo
+{
+    private ?int $id;
+}
+```
+
+is actually seen as this:
+```php
+use Dgame\DataTransferObject\Annotation\Type;
+
+final class Foo
+{
+    #[Type(name: '?int')]
+    private ?int $id;
+}
+```
+
+The following snippets are equivalent to the snippet above:
+
+```php
+use Dgame\DataTransferObject\Annotation\Type;
+
+final class Foo
+{
+    #[Type(name: 'int|null')]
+    private ?int $id;
+}
+```
+
+```php
+use Dgame\DataTransferObject\Annotation\Type;
+
+final class Foo
+{
+    #[Type(name: 'int', allowsNull: true)]
+    private ?int $id;
+}
+```
+
+---
+
+If you want to change the exception message, you can do so using the `message` parameter:
+
+```php
+use Dgame\DataTransferObject\Annotation\Type;
+
+final class Foo
+{
+    #[Type(name: '?int', message: 'id is expected to be int or null')]
+    private ?int $id;
+}
+```
+
 ### Custom
 
 Do you want your Validation? Just implement the `Validation`-interface:

@@ -32,7 +32,7 @@ final class DataTransferProperty
     private mixed $defaultValue;
 
     /**
-     * @param ReflectionProperty $property
+     * @param ReflectionProperty    $property
      * @param DataTransferObject<T> $parent
      *
      * @throws ReflectionException
@@ -49,15 +49,15 @@ final class DataTransferProperty
 
         if ($property->hasDefaultValue()) {
             $this->hasDefaultValue = true;
-            $this->defaultValue = $property->getDefaultValue();
+            $this->defaultValue    = $property->getDefaultValue();
         } else {
             $parameter = $this->getPromotedConstructorParameter($parent->getConstructor(), $property->getName());
             if ($parameter !== null && $parameter->isOptional()) {
                 $this->hasDefaultValue = true;
-                $this->defaultValue = $parameter->getDefaultValue();
+                $this->defaultValue    = $parameter->getDefaultValue();
             } else {
                 $this->hasDefaultValue = $property->getType()?->allowsNull() ?? false;
-                $this->defaultValue = null;
+                $this->defaultValue    = null;
             }
         }
     }
@@ -159,7 +159,7 @@ final class DataTransferProperty
         $names = [];
         foreach ($this->property->getAttributes(Name::class) as $attribute) {
             /** @var Name $name */
-            $name = $attribute->newInstance();
+            $name                    = $attribute->newInstance();
             $names[$name->getName()] = true;
         }
 
@@ -169,7 +169,7 @@ final class DataTransferProperty
 
         foreach ($this->property->getAttributes(Alias::class) as $attribute) {
             /** @var Alias $alias */
-            $alias = $attribute->newInstance();
+            $alias                    = $attribute->newInstance();
             $names[$alias->getName()] = true;
         }
 

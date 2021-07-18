@@ -82,10 +82,17 @@ final class DataTransferValue
      */
     private function validate(): void
     {
+        $typeChecked = false;
         foreach ($this->property->getAttributes(Validation::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
             /** @var Validation $validation */
             $validation = $attribute->newInstance();
             $validation->validate($this->value);
+
+            $typeChecked = $typeChecked || $validation instanceof Type;
+        }
+
+        if ($typeChecked) {
+            return;
         }
 
         $type = $this->property->getType();

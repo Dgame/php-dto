@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Dgame\DataTransferObject;
 
-use Dgame\DataTransferObject\Annotation\Call;
+use Dgame\DataTransferObject\Annotation\Transformation;
 use Dgame\DataTransferObject\Annotation\Type;
 use Dgame\DataTransferObject\Annotation\Validation;
 use ReflectionAttribute;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionProperty;
-use Safe\Exceptions\StringsException;
 use Throwable;
 
 final class DataTransferValue
@@ -22,7 +21,7 @@ final class DataTransferValue
      */
     public function __construct(private mixed $value, private ReflectionProperty $property)
     {
-        $this->applyCallbacks();
+        $this->applyTransformations();
         $this->tryResolvingIntoObject();
         $this->validate();
     }
@@ -32,15 +31,12 @@ final class DataTransferValue
         return $this->value;
     }
 
-    /**
-     * @throws ReflectionException
-     */
-    private function applyCallbacks(): void
+    private function applyTransformations(): void
     {
-        foreach ($this->property->getAttributes(Call::class) as $attribute) {
-            /** @var Call $call */
-            $call        = $attribute->newInstance();
-            $this->value = $call->with($this->value);
+        foreach ($this->property->getAttributes(Transformation::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
+            /** @var Transformation $transformation */
+            $transformation = $attribute->newInstance();
+            $this->value    = $transformation->transform($this->value, $this->property);
         }
     }
 
@@ -77,9 +73,6 @@ final class DataTransferValue
         $this->value = $dto->getInstance();
     }
 
-    /**
-     * @throws StringsException
-     */
     private function validate(): void
     {
         $typeChecked = false;

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Dgame\DataTransferObject\Tests\Stubs;
 
-use Dgame\DataTransferObject\Annotation\Call;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\Annotation\Cast;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class CastStub
 {
-    use From;
+    use DataTransfer;
 
-    #[Call(class: self::class, method: 'toInt')]
+    #[Cast(method: 'toInt', class: self::class)]
     public int $id;
 
     public static function toInt(string|int|float|bool $value): int

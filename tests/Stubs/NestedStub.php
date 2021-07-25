@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Tests\Stubs;
 
 use Dgame\DataTransferObject\Annotation\Name;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class NestedStub
 {
-    use From;
+    use DataTransfer;
 
     public LimitStub $limit;
     #[Name('match')]

@@ -2,7 +2,10 @@
     "name": "dgame/php-dto",
     "type": "package",
     "description": "A data transfer object inspired by Rust's serde",
-    "keywords": ["DTO", "data transfer object"],
+    "keywords": [
+        "DTO",
+        "data transfer object"
+    ],
     "license": "MIT",
     "authors": [
         {
@@ -13,7 +16,6 @@
     ],
     "require": {
         "php": "^8.0",
-        "sebastian/type": "^2.3",
         "thecodingmachine/safe": "^1.3"
     },
     "require-dev": {

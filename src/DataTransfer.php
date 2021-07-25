@@ -7,7 +7,7 @@ namespace Dgame\DataTransferObject;
 use ReflectionException;
 use Throwable;
 
-trait From
+trait DataTransfer
 {
     /**
      * @throws ReflectionException

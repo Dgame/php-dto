@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject;
 
 use Dgame\DataTransferObject\Annotation\Finalize;
+use Dgame\DataTransferObject\Annotation\SelfValidation;
 use ReflectionAttribute;
 use ReflectionClass;
 use ReflectionException;
@@ -57,6 +58,8 @@ final class DataTransferObject
 
     /**
      * @param array<string, mixed> $input
+     *
+     * @throws ReflectionException
      */
     public function finalize(array $input): void
     {
@@ -64,6 +67,13 @@ final class DataTransferObject
             /** @var Finalize $finalize */
             $finalize = $attribute->newInstance();
             $finalize->finalize($input);
+        }
+
+        foreach ($this->reflection->getAttributes(SelfValidation::class) as $attribute) {
+            /** @var SelfValidation $validation */
+            $validation = $attribute->newInstance();
+            $method = $this->reflection->getMethod($validation->getMethod());
+            $method->invoke($this->object);
         }
     }
 
@@ -74,7 +84,6 @@ final class DataTransferObject
     {
         return $this->object;
     }
-
 
     public function getConstructor(): ?ReflectionMethod
     {

@@ -7,6 +7,8 @@ namespace Dgame\DataTransferObject;
 use Dgame\DataTransferObject\Annotation\Alias;
 use Dgame\DataTransferObject\Annotation\Ignore;
 use Dgame\DataTransferObject\Annotation\Name;
+use Dgame\DataTransferObject\Annotation\Optional;
+use Dgame\DataTransferObject\Annotation\Path;
 use Dgame\DataTransferObject\Annotation\Reject;
 use Dgame\DataTransferObject\Annotation\Required;
 use InvalidArgumentException;
@@ -14,6 +16,7 @@ use ReflectionException;
 use ReflectionMethod;
 use ReflectionParameter;
 use ReflectionProperty;
+use Safe\Exceptions\PcreException;
 use Throwable;
 
 /**
@@ -92,14 +95,17 @@ final class DataTransferProperty
     public function setValueFrom(array &$input): void
     {
         foreach ($this->names as $name) {
-            if (!array_key_exists($name, $input)) {
+            $value = $this->handlePath($input);
+            if ($value === null && !array_key_exists($name, $input)) {
                 continue;
             }
 
             $this->handleRejected();
 
-            $value = $input[$name];
-            unset($input[$name]);
+            if ($value === null) {
+                $value = $input[$name];
+                unset($input[$name]);
+            }
 
             $value = new DataTransferValue($value, $this->property);
             $this->assign($value->getValue());
@@ -108,14 +114,30 @@ final class DataTransferProperty
         }
 
         $this->handleRequired();
+        $this->handleOptional();
+    }
 
-        if ($this->hasDefaultValue) {
-            $this->assign($this->defaultValue);
+    /**
+     * @param array<string, mixed> $input
+     *
+     * @return mixed
+     * @throws PcreException
+     */
+    private function handlePath(array &$input): mixed
+    {
+        foreach ($this->property->getAttributes(Path::class) as $attribute) {
+            /** @var Path $path */
+            $path  = $attribute->newInstance();
+            $value = $path->extract($input);
+            $key   = $path->getKey();
+            if ($value !== null && $key !== null) {
+                unset($input[$key]);
+            }
 
-            return;
+            return $value;
         }
 
-        throw $this->getMissingException();
+        return null;
     }
 
     private function handleRejected(): void
@@ -134,6 +156,31 @@ final class DataTransferProperty
             $required = $attribute->newInstance();
             $required->execute();
         }
+    }
+
+    private function handleOptional(): void
+    {
+        if ($this->hasDefaultValue && $this->defaultValue !== null) {
+            $this->assign($this->defaultValue);
+
+            return;
+        }
+
+        foreach ($this->property->getAttributes(Optional::class) as $attribute) {
+            /** @var Optional $optional */
+            $optional = $attribute->newInstance();
+            $value    = $optional->getValue($this->property);
+
+            $this->assign($value);
+
+            return;
+        }
+
+        if (!$this->hasDefaultValue) {
+            throw $this->getMissingException();
+        }
+
+        $this->assign($this->defaultValue);
     }
 
     private function getPromotedConstructorParameter(?ReflectionMethod $constructor, string $name): ?ReflectionParameter

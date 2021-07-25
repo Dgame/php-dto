@@ -21,11 +21,11 @@ You get a parameter which is not named as the parameter in your class? `#[Name(.
 
 ```php
 use Dgame\DataTransferObject\Annotation\Name;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Limit
 {
-    use From;
+    use DataTransfer;
 
     public int $offset;
     #[Name('size')]
@@ -42,11 +42,11 @@ You get a parameter which is not **always** named as the parameter in your class
 
 ```php
 use Dgame\DataTransferObject\Annotation\Alias;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Limit
 {
-    use From;
+    use DataTransfer;
 
     public int $offset;
     #[Alias('size')]
@@ -59,11 +59,11 @@ Now the keys `size` **and** `limit`  will be mapped to the property `$limit`. Yo
 ```php
 use Dgame\DataTransferObject\Annotation\Alias;
 use Dgame\DataTransferObject\Annotation\Name;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Foo
 {
-    use From;
+    use DataTransfer;
 
     #[Name('a')]
     #[Alias('z')]
@@ -75,11 +75,11 @@ The keys `a` and `z` are mapped to the property `id` - but not the key `id` sinc
 
 ```php
 use Dgame\DataTransferObject\Annotation\Alias;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Foo
 {
-    use From;
+    use DataTransfer;
 
     #[Alias('a')]
     #[Alias('z')]
@@ -95,11 +95,11 @@ You want to call a function or method before the value is assigned? No problem w
 
 ```php
 use Dgame\DataTransferObject\Annotation\Call;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Foo
 {
-    use From;
+    use DataTransfer;
 
     #[Call(class: self::class, method: 'toInt')]
     public int $id;
@@ -121,11 +121,11 @@ You want to validate the value before it is assigned? We can do that. There are 
 
 ```php
 use Dgame\DataTransferObject\Annotation\Min;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Limit
 {
-    use From;
+    use DataTransfer;
     
     #[Min(0)]
     public int $offset;
@@ -138,11 +138,11 @@ Both `$offset` and `$limit` must be at least have the value `0` (so they must be
 
 ```php
 use Dgame\DataTransferObject\Annotation\Min;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Limit
 {
-    use From;
+    use DataTransfer;
     
     #[Min(0, message: 'Offset must be positive!')]
     public int $offset;
@@ -155,11 +155,11 @@ final class Limit
 
 ```php
 use Dgame\DataTransferObject\Annotation\Max;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Limit
 {
-    use From;
+    use DataTransfer;
     
     #[Max(1000)]
     public int $offset;
@@ -172,11 +172,11 @@ Both `$offset` and `$limit` may not exceed `1000`. If they do, an exception is t
 
 ```php
 use Dgame\DataTransferObject\Annotation\Max;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Limit
 {
-    use From;
+    use DataTransfer;
     
     #[Max(1000, message: 'Offset may not be larger than 1000')]
     public int $offset;
@@ -267,7 +267,7 @@ Do you want your own Validation? Just implement the `Validation`-interface:
 
 ```php
 use Dgame\DataTransferObject\Annotation\Validation;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
 final class NumberBetween implements Validation
@@ -294,7 +294,7 @@ final class NumberBetween implements Validation
 
 final class ValidationStub
 {
-    use From;
+    use DataTransfer;
 
     #[NumberBetween(18, 125)]
     private int $age;
@@ -312,11 +312,11 @@ You don't want a specific key-value to override your property? Just ignore it:
 
 ```php
 use Dgame\DataTransferObject\Annotation\Ignore;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Foo
 {
-    use From;
+    use DataTransfer;
 
     #[Ignore]
     public string $uuid = 'abc';
@@ -334,11 +334,11 @@ You want to go one step further than simply ignoring a value? Then `Reject` it:
 
 ```php
 use Dgame\DataTransferObject\Annotation\Reject;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Foo
 {
-    use From;
+    use DataTransfer;
 
     #[Reject(reason: 'The attribute "uuid" is not supposed to be set')]
     public string $uuid = 'abc';
@@ -359,11 +359,11 @@ But in some cases you might want to specify the reason, why the property is requ
 
 ```php
 use Dgame\DataTransferObject\Annotation\Required;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Foo
 {
-    use From;
+    use DataTransfer;
 
     #[Required(reason: 'We need an "id"')]
     public ?int $id;
@@ -380,13 +380,14 @@ Foo::from(['id' => 42]); // Fails and would fail regardless of the `Required`-At
 # Property promotion
 
 In the above examples, [property promotion](https://stitcher.io/blog/constructor-promotion-in-php-8) is not used because it is more readable that way, but property promotion is supported. So the following example
+
 ```php
 use Dgame\DataTransferObject\Annotation\Min;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Limit
 {
-    use From;
+    use DataTransfer;
     
     #[Min(0)]
     public int $offset;
@@ -399,11 +400,11 @@ can be rewritten as shown below
 
 ```php
 use Dgame\DataTransferObject\Annotation\Min;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Limit
 {
-    use From;
+    use DataTransfer;
 
     public function __construct(
         #[Min(0)] public int $offset,
@@ -419,7 +420,7 @@ and it still works.
 You have nested objects and want to deserialize them all at once? That is a given:
 
 ```php
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class Bar
 {
@@ -428,7 +429,7 @@ final class Bar
 
 final class Foo
 {
-    use From;
+    use DataTransfer;
     
     public Bar $bar;
 }

@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Tests\Stubs;
 
 use Dgame\DataTransferObject\Annotation\Min;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class PaginationStub
 {
-    use From;
+    use DataTransfer;
 
     #[Min(0)]
     private ?int $offset;

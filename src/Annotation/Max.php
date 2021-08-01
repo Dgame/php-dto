@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Annotation;
 
 use Attribute;
-use InvalidArgumentException;
 
 #[Attribute(flags: Attribute::TARGET_PROPERTY)]
 final class Max implements Validation
@@ -14,11 +13,11 @@ final class Max implements Validation
     {
     }
 
-    public function validate(mixed $value): void
+    public function validate(mixed $value, ValidationStrategy $failure): void
     {
         if ((is_int($value) || is_float($value))) {
             if ($value > $this->maxValue) {
-                throw new InvalidArgumentException($this->message ?? var_export($value, true) . ' is > ' . $this->maxValue);
+                $failure->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must be <= ' . $this->maxValue);
             }
 
             return;
@@ -26,14 +25,14 @@ final class Max implements Validation
 
         if (is_string($value)) {
             if (strlen($value) > $this->maxValue) {
-                throw new InvalidArgumentException($this->message ?? var_export($value, true) . ' is > ' . $this->maxValue);
+                $failure->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must have at most a length of ' . $this->maxValue);
             }
 
             return;
         }
 
         if (is_array($value) && count($value) > $this->maxValue) {
-            throw new InvalidArgumentException($this->message ?? var_export($value, true) . ' is > ' . $this->maxValue);
+            $failure->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must have at most a length of ' . $this->maxValue);
         }
     }
 }

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Annotation;
 
 use Attribute;
-use Dgame\DataTransferObject\ValidationException;
 use Dgame\Type\Type as PhpType;
 use ReflectionNamedType;
 
@@ -24,11 +23,11 @@ final class Type implements Validation
         return new self($type->getName(), allowsNull: $type->allowsNull());
     }
 
-    public function validate(mixed $value): void
+    public function validate(mixed $value, ValidationStrategy $failure): void
     {
         if ($value === null) {
             if (!$this->type->allowsNull()) {
-                throw new ValidationException($this->message ?? 'Cannot assign null to non-nullable ' . $this->type->getName());
+                $failure->setFailure($this->message ?? 'Cannot assign null to non-nullable ' . $this->type->getName() . ' of {path}');
             }
 
             return;
@@ -36,7 +35,7 @@ final class Type implements Validation
 
         $valueType = PhpType::fromValue($value);
         if (!$this->type->isAssignable($valueType)) {
-            throw new ValidationException($this->message ?? 'Cannot assign ' . $valueType->getName() . ' ' . var_export($value, return: true) . ' to ' . $this->type->getName());
+            $failure->setFailure($this->message ?? 'Cannot assign ' . $valueType->getName() . ' ' . var_export($value, return: true) . ' to ' . $this->type->getName() . ' of {path}');
         }
     }
 }

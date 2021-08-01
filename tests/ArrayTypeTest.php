@@ -29,7 +29,7 @@ final class ArrayTypeTest extends TestCase
 
     /**
      * @param array  $input
-     * @param string $expectedMessage
+     * @param string|null $expectedMessage
      *
      * @throws ReflectionException
      * @throws Throwable

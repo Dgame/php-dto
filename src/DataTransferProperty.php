@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject;
 
 use Dgame\DataTransferObject\Annotation\Alias;
+use Dgame\DataTransferObject\Annotation\ValidationStrategy;
 use Dgame\DataTransferObject\Annotation\Ignore;
 use Dgame\DataTransferObject\Annotation\Name;
 use Dgame\DataTransferObject\Annotation\Optional;
 use Dgame\DataTransferObject\Annotation\Path;
 use Dgame\DataTransferObject\Annotation\Reject;
 use Dgame\DataTransferObject\Annotation\Required;
+use Dgame\DataTransferObject\Failure\FailureCollection;
 use InvalidArgumentException;
 use ReflectionException;
 use ReflectionMethod;
@@ -33,6 +35,7 @@ final class DataTransferProperty
     private object $instance;
     private bool $hasDefaultValue;
     private mixed $defaultValue;
+    private ValidationStrategy $failure;
 
     /**
      * @param ReflectionProperty    $property
@@ -42,9 +45,12 @@ final class DataTransferProperty
      */
     public function __construct(private ReflectionProperty $property, DataTransferObject $parent)
     {
+        $this->failure = $parent->getValidationStrategy();
+
         if (version_compare(PHP_VERSION, '8.1') < 0) {
             $property->setAccessible(true);
         }
+
         $this->ignore = $this->property->getAttributes(Ignore::class) !== [];
         $this->setNames();
 
@@ -107,7 +113,7 @@ final class DataTransferProperty
                 unset($input[$name]);
             }
 
-            $value = new DataTransferValue($value, $this->property);
+            $value = new DataTransferValue($value, $this->property, $this->failure);
             $this->assign($value->getValue());
 
             return;
@@ -177,10 +183,10 @@ final class DataTransferProperty
         }
 
         if (!$this->hasDefaultValue) {
-            throw $this->getMissingException();
+            $this->handleMissingRequiredValue();
+        } else {
+            $this->assign($this->defaultValue);
         }
-
-        $this->assign($this->defaultValue);
     }
 
     private function getPromotedConstructorParameter(?ReflectionMethod $constructor, string $name): ?ReflectionParameter
@@ -223,12 +229,11 @@ final class DataTransferProperty
         $this->names = array_keys($names);
     }
 
-    private function getMissingException(): Throwable
+    private function handleMissingRequiredValue(): void
     {
-        return match (count($this->names)) {
-            0 => new InvalidArgumentException('Expected a value'),
-            1 => new InvalidArgumentException('Expected a value for "' . current($this->names) . '"'),
-            default => new InvalidArgumentException('Expected one of "' . implode(', ', $this->names) . '"')
+        match (count($this->names)) {
+            0, 1 => $this->failure->setFailure('Expected a value for {path}'),
+            default => $this->failure->setFailure('Expected one of "' . implode(', ', $this->names) . '"')
         };
     }
 }

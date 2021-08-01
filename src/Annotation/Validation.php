@@ -6,5 +6,5 @@ namespace Dgame\DataTransferObject\Annotation;
 
 interface Validation
 {
-    public function validate(mixed $value, ValidationStrategy $failure): void;
+    public function validate(mixed $value, ValidationStrategy $validationStrategy): void;
 }

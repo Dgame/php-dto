@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Dgame\DataTransferObject;
 
-use Dgame\DataTransferObject\Annotation\ValidationStrategy;
 use Dgame\DataTransferObject\Annotation\Transformation;
 use Dgame\DataTransferObject\Annotation\Type;
 use Dgame\DataTransferObject\Annotation\Validation;
+use Dgame\DataTransferObject\Annotation\ValidationStrategy;
 use ReflectionAttribute;
 use ReflectionException;
 use ReflectionNamedType;
@@ -20,11 +20,11 @@ final class DataTransferValue
      * @throws ReflectionException
      * @throws Throwable
      */
-    public function __construct(private mixed $value, private ReflectionProperty $property, ValidationStrategy $failure)
+    public function __construct(private mixed $value, private ReflectionProperty $property, ValidationStrategy $validationStrategy)
     {
         $this->applyTransformations();
         $this->tryResolvingIntoObject();
-        $this->validate($failure);
+        $this->validate($validationStrategy);
     }
 
     public function getValue(): mixed
@@ -74,13 +74,13 @@ final class DataTransferValue
         $this->value = $dto->getInstance();
     }
 
-    private function validate(ValidationStrategy $failure): void
+    private function validate(ValidationStrategy $validationStrategy): void
     {
         $typeChecked = false;
         foreach ($this->property->getAttributes(Validation::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
             /** @var Validation $validation */
             $validation = $attribute->newInstance();
-            $validation->validate($this->value, $failure);
+            $validation->validate($this->value, $validationStrategy);
 
             $typeChecked = $typeChecked || $validation instanceof Type;
         }
@@ -91,7 +91,7 @@ final class DataTransferValue
 
         $type = $this->property->getType();
         if ($type instanceof ReflectionNamedType) {
-            Type::from($type)->validate($this->value, $failure);
+            Type::from($type)->validate($this->value, $validationStrategy);
         }
     }
 }

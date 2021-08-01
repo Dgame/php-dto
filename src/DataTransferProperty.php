@@ -5,15 +5,13 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject;
 
 use Dgame\DataTransferObject\Annotation\Alias;
-use Dgame\DataTransferObject\Annotation\ValidationStrategy;
 use Dgame\DataTransferObject\Annotation\Ignore;
 use Dgame\DataTransferObject\Annotation\Name;
 use Dgame\DataTransferObject\Annotation\Optional;
 use Dgame\DataTransferObject\Annotation\Path;
 use Dgame\DataTransferObject\Annotation\Reject;
 use Dgame\DataTransferObject\Annotation\Required;
-use Dgame\DataTransferObject\Failure\FailureCollection;
-use InvalidArgumentException;
+use Dgame\DataTransferObject\Annotation\ValidationStrategy;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionParameter;
@@ -35,7 +33,7 @@ final class DataTransferProperty
     private object $instance;
     private bool $hasDefaultValue;
     private mixed $defaultValue;
-    private ValidationStrategy $failure;
+    private ValidationStrategy $validationStrategy;
 
     /**
      * @param ReflectionProperty    $property
@@ -45,7 +43,7 @@ final class DataTransferProperty
      */
     public function __construct(private ReflectionProperty $property, DataTransferObject $parent)
     {
-        $this->failure = $parent->getValidationStrategy();
+        $this->validationStrategy = $parent->getValidationStrategy();
 
         if (version_compare(PHP_VERSION, '8.1') < 0) {
             $property->setAccessible(true);
@@ -113,7 +111,7 @@ final class DataTransferProperty
                 unset($input[$name]);
             }
 
-            $value = new DataTransferValue($value, $this->property, $this->failure);
+            $value = new DataTransferValue($value, $this->property, $this->validationStrategy);
             $this->assign($value->getValue());
 
             return;
@@ -232,8 +230,8 @@ final class DataTransferProperty
     private function handleMissingRequiredValue(): void
     {
         match (count($this->names)) {
-            0, 1 => $this->failure->setFailure('Expected a value for {path}'),
-            default => $this->failure->setFailure('Expected one of "' . implode(', ', $this->names) . '"')
+            0, 1 => $this->validationStrategy->setFailure('Expected a value for {path}'),
+            default => $this->validationStrategy->setFailure('Expected one of "' . implode(', ', $this->names) . '"')
         };
     }
 }

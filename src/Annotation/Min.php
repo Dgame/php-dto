@@ -13,11 +13,11 @@ final class Min implements Validation
     {
     }
 
-    public function validate(mixed $value, ValidationStrategy $failure): void
+    public function validate(mixed $value, ValidationStrategy $validationStrategy): void
     {
         if ((is_int($value) || is_float($value))) {
             if ($value < $this->minValue) {
-                $failure->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must be >= ' . $this->minValue);
+                $validationStrategy->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must be >= ' . $this->minValue);
             }
 
             return;
@@ -25,14 +25,14 @@ final class Min implements Validation
 
         if (is_string($value)) {
             if (strlen($value) < $this->minValue) {
-                $failure->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must have at least a length of ' . $this->minValue);
+                $validationStrategy->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must have at least a length of ' . $this->minValue);
             }
 
             return;
         }
 
         if (is_array($value) && count($value) < $this->minValue) {
-            $failure->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must have at least a length of ' . $this->minValue);
+            $validationStrategy->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must have at least a length of ' . $this->minValue);
         }
     }
 }

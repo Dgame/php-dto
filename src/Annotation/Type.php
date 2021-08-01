@@ -23,11 +23,11 @@ final class Type implements Validation
         return new self($type->getName(), allowsNull: $type->allowsNull());
     }
 
-    public function validate(mixed $value, ValidationStrategy $failure): void
+    public function validate(mixed $value, ValidationStrategy $validationStrategy): void
     {
         if ($value === null) {
             if (!$this->type->allowsNull()) {
-                $failure->setFailure($this->message ?? 'Cannot assign null to non-nullable ' . $this->type->getName() . ' of {path}');
+                $validationStrategy->setFailure($this->message ?? 'Cannot assign null to non-nullable ' . $this->type->getName() . ' of {path}');
             }
 
             return;
@@ -35,7 +35,7 @@ final class Type implements Validation
 
         $valueType = PhpType::fromValue($value);
         if (!$this->type->isAssignable($valueType)) {
-            $failure->setFailure($this->message ?? 'Cannot assign ' . $valueType->getName() . ' ' . var_export($value, return: true) . ' to ' . $this->type->getName() . ' of {path}');
+            $validationStrategy->setFailure($this->message ?? 'Cannot assign ' . $valueType->getName() . ' ' . var_export($value, return: true) . ' to ' . $this->type->getName() . ' of {path}');
         }
     }
 }

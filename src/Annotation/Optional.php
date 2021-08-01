@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Annotation;
 
 use Attribute;
-use Dgame\DataTransferObject\Type\Defaultable;
-use Dgame\DataTransferObject\Type\Type as PhpType;
+use Dgame\Type\Defaultable;
+use Dgame\Type\Type as PhpType;
 use InvalidArgumentException;
 use ReflectionNamedType;
 use ReflectionProperty;

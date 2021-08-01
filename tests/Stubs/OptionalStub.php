@@ -21,7 +21,8 @@ final class OptionalStub
         #[Optional(value: 'foobar')]
         public ?string $message,
         #[Optional(value: 99)]
-        public int $age = 18)
+        public int $age = 18
+    )
     {
     }
 }

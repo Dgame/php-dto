@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Annotation;
 
 use Attribute;
-use Dgame\DataTransferObject\Type\Type as PhpType;
 use Dgame\DataTransferObject\ValidationException;
+use Dgame\Type\Type as PhpType;
 use ReflectionNamedType;
 
 #[Attribute(flags: Attribute::TARGET_PROPERTY)]
@@ -36,7 +36,7 @@ final class Type implements Validation
 
         $valueType = PhpType::fromValue($value);
         if (!$this->type->isAssignable($valueType)) {
-            throw new ValidationException($this->message ?? 'Cannot assign ' . $valueType->getName() . ' ' . var_export($value, true) . ' to ' . $this->type->getName());
+            throw new ValidationException($this->message ?? 'Cannot assign ' . $valueType->getName() . ' ' . var_export($value, return: true) . ' to ' . $this->type->getName());
         }
     }
 }

@@ -89,19 +89,55 @@ final class Foo
 
 will accept the keys `a`, `z` and `id`.
 
-## Call
+## Transformations
 
-You want to call a function or method before the value is assigned? No problem with `#[Call(<method>, <class>)]`. If you don't specify a method but just a class, the `__invoke` method is the default.
+If you want to _transform_ a value **before** it is assigned to the property, you can use Transformations.
+You just need to implement the _Transformation_ interface. 
+
+### Cast
+
+_Cast_  is currently the only built-in Transformation and let you apply a Type-Cast **before** the value is assigned to the property:
+
+If not told otherwise, a simple type-cast is performed. In the example below it would just call something like `$this->id = (int) $id`:
 
 ```php
-use Dgame\DataTransferObject\Annotation\Call;
-use Dgame\DataTransferObject\DataTransfer;
+use Dgame\DataTransferObject\Annotation\Cast;
 
 final class Foo
 {
     use DataTransfer;
 
-    #[Call(class: self::class, method: 'toInt')]
+    #[Cast]
+    public int $id;
+}
+```
+
+But that would be tried for **any** input. If you want to limit this to certain types, you can use `types`:
+
+```php
+use Dgame\DataTransferObject\Annotation\Cast;
+
+final class Foo
+{
+    use DataTransfer;
+
+    #[Cast(types: ['string', 'float', 'bool'])]
+    public int $id;
+}
+```
+
+Here the cast would only be performed if the incoming value is either an `int`, `string`, `float` or `bool`. 
+
+If you want more control, you can use a static method inside of the class:
+
+```php
+use Dgame\DataTransferObject\Annotation\Cast;
+
+final class Foo
+{
+    use DataTransfer;
+
+    #[Cast(method: 'toInt', class: self::class)]
     public int $id;
 
     public static function toInt(string|int|float|bool $value): int
@@ -109,8 +145,44 @@ final class Foo
         return (int) $value;
     }
 }
+```
 
-$foo = Foo::from(['id' => '43']);
+or a function:
+
+```php
+use Dgame\DataTransferObject\Annotation\Cast;
+
+function toInt(string|int|float|bool $value): int
+{
+    return (int) $value;
+}
+
+final class Foo
+{
+    use DataTransfer;
+
+    #[Cast(method: 'toInt')]
+    public int $id;
+}
+```
+
+If a class is given but not a `method`, by default `__invoke` will be used:
+
+```php
+use Dgame\DataTransferObject\Annotation\Cast;
+
+final class Foo
+{
+    use DataTransfer;
+
+    #[Cast(class: self::class)]
+    public int $id;
+
+    public function __invoke(string|int|float|bool $value): int
+    {
+        return (int) $value;
+    }
+}
 ```
 
 ## Validation
@@ -377,9 +449,162 @@ Foo::from(['name' => 'abc']); // Fails but would work without the `Required`-Att
 Foo::from(['id' => 42]); // Fails and would fail regardless of the `Required`-Attribute since $name is not nullable and has no default-value - but the reason why it is required is now more clear.
 ```
 
+## Optional
+
+The counterpart of [Required](#required).
+If you don't want to or can't provide a default/nullable value, `Optional` will assign the **default value** of the property-type in case of a missing value:
+
+```php
+final class Foo
+{
+    use DataTransfer;
+    
+    #[Optional]
+    public int $id;
+}
+
+$foo = Foo::from([]);
+assert($foo->id === 0);
+```
+
+Of course you can specify which value should be used if no data is provided:
+
+```php
+final class Foo
+{
+    use DataTransfer;
+    
+    #[Optional(value: 42)]
+    public int $id;
+}
+
+$foo = Foo::from([]);
+assert($foo->id === 42);
+```
+
+In case you're using `Optional` together with a provided default-value, the default-value has always priority:
+
+```php
+final class Foo
+{
+    use DataTransfer;
+    
+    #[Optional(value: 42)]
+    public int $id = 23;
+}
+
+$foo = Foo::from([]);
+assert($foo->id === 23);
+```
+
+## Path
+
+Ever had the pleasure dealing with XML's `#text` or JSON's `$value` attributes? Or did you ever wanted to extract a value from a provided array?
+`Path` to the rescue:
+
+```php
+final class Person
+{
+    use DataTransfer;
+
+    #[Path('person.name')]
+    public string $name;
+}
+```
+
+```php
+final class Person
+{
+    use DataTransfer;
+
+    #[Path('married.$value')]
+    public bool $married;
+}
+```
+
+```php
+final class Person
+{
+    use DataTransfer;
+
+    #[Path('first.name.#text')]
+    public string $firstname;
+}
+```
+
+---
+
+```php
+final class Person
+{
+    use DataTransfer;
+
+    #[Path('child.{born, age}')]
+    public array $firstChild = [];
+}
+```
+
+```php
+final class Person
+{
+    use DataTransfer;
+    
+    public int $id;
+    public string $name;
+    public ?int $age = null;
+
+    #[Path('ancestor.{id, name}')]
+    public ?self $parent = null;
+}
+```
+
+## SelfValidation
+
+In addition to the [customary validations](#validation) you can specify a class-wide validation after **all** assignments are done:
+
+```php
+#[SelfValidation(method: 'validate')]
+final class SelfValidationStub
+{
+    use DataTransfer;
+
+    public function __construct(public int $id)
+    {
+    }
+
+    public function validate(): void
+    {
+        assert($this->id > 0);
+    }
+}
+```
+
+## ValidationStrategy
+
+The default validation strategy is **fail-fast** which means an Exception is thrown as soon as an error is detected.
+But that might not desirable, so you can configure this with a `ValidationStrategy`:
+
+```php
+#[ValidationStrategy(failFast: false)]
+final class Foo
+{
+    use DataTransfer;
+
+    #[Min(3)]
+    public string $name;
+    #[Min(0)]
+    public int $id;
+}
+
+Foo::from(['name' => 'a', 'id' => -1]);
+```
+
+The example above would throw a combined exception that `name` is not long enough and `id` must be at least 0.
+You can configure this as well by extending the `ValidationStrategy` and provide a `FailureHandler` and/or a `FailureCollection`.
+
 # Property promotion
 
-In the above examples, [property promotion](https://stitcher.io/blog/constructor-promotion-in-php-8) is not used because it is more readable that way, but property promotion is supported. So the following example
+In the above examples, [property promotion](https://stitcher.io/blog/constructor-promotion-in-php-8) is not always used because it is more readable that way, but property promotion is supported. So the following example
 
 ```php
 use Dgame\DataTransferObject\Annotation\Min;

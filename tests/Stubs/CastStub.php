@@ -11,8 +11,21 @@ final class CastStub
 {
     use DataTransfer;
 
+    #[Cast]
+    public int|float|null $uid;
+
     #[Cast(method: 'toInt', class: self::class)]
-    public int $id;
+    public ?int $id;
+
+    #[Cast(types: ['string', 'float', 'bool'])]
+    public ?int $age;
+
+    public function __construct(?int $id = null, ?int $age = null, int|float|null $uid = null)
+    {
+        $this->id  = $id;
+        $this->age = $age;
+        $this->uid = $uid;
+    }
 
     public static function toInt(string|int|float|bool $value): int
     {

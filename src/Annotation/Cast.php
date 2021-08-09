@@ -7,11 +7,13 @@ namespace Dgame\DataTransferObject\Annotation;
 use Attribute;
 use Dgame\Type\Castable;
 use Dgame\Type\Type as PhpType;
+use Dgame\Type\UnionType;
 use InvalidArgumentException;
 use ReflectionClass;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionProperty;
+use ReflectionUnionType;
 
 #[Attribute(flags: Attribute::TARGET_PROPERTY)]
 final class Cast implements Transformation
@@ -22,9 +24,9 @@ final class Cast implements Transformation
     private array $types = [];
 
     /**
-     * @param string[] $types
+     * @param string[]          $types
      * @param class-string|null $class
-     * @param string|null $method
+     * @param string|null       $method
      *
      * @throws ReflectionException
      */
@@ -46,36 +48,63 @@ final class Cast implements Transformation
 
     public function transform(mixed $value, ReflectionProperty $property): mixed
     {
-        $reflectionNamedType = $property->getType();
-        if (!($reflectionNamedType instanceof ReflectionNamedType)) {
-            throw new InvalidArgumentException('Cannot cast to unknown type');
+        $propertyType = $this->getType($property);
+        if ($propertyType->accept($value)) {
+            return $this->cast($value);
         }
 
-        $propertyType = PhpType::fromReflection($reflectionNamedType);
-        if (!($propertyType instanceof Castable)) {
-            throw new InvalidArgumentException('Cannot cast to type ' . $reflectionNamedType->getName());
-        }
+        $this->validate($value);
 
-        if (!$this->accepts($value)) {
-            throw new InvalidArgumentException($propertyType->getName() . ' is not accepted');
+        if (!($propertyType instanceof Castable) && (!($propertyType instanceof UnionType) || !$propertyType->isCastable())) {
+            throw new InvalidArgumentException('Cannot cast to type ' . $propertyType->getName() . ' with value ' . var_export($value, true));
         }
 
         return $propertyType->cast($this->cast($value));
     }
 
-    private function accepts(mixed $value): bool
+    private function getType(ReflectionProperty $property): PhpType
     {
-        if ($this->types === []) {
-            return true;
+        $reflectionType = $property->getType();
+        if ($reflectionType instanceof ReflectionNamedType) {
+            return PhpType::fromReflection($reflectionType);
         }
 
+        if ($reflectionType instanceof ReflectionUnionType) {
+            $typeName = implode('|',
+                                array_map(
+                                    static fn(ReflectionNamedType $type) => $type->getName(),
+                                    $reflectionType->getTypes()
+                                )
+            );
+
+            return PhpType::fromName($typeName);
+        }
+
+        throw new InvalidArgumentException('Cannot cast to unknown type');
+    }
+
+    private function validate(mixed $value): void
+    {
+        if ($this->types === []) {
+            return;
+        }
+
+        $other = PhpType::fromValue($value);
         foreach ($this->types as $type) {
-            if ($type->accept($value)) {
-                return true;
+            if ($type instanceof $other) {
+                return;
             }
         }
 
-        return false;
+        throw new InvalidArgumentException(
+            \Safe\sprintf(
+                'Only %s %s accepted, %s (%s) given.',
+                implode(' and ', array_map(static fn(PhpType $type) => $type->getName(), $this->types)),
+                count($this->types) === 1 ? 'is' : 'are',
+                $other->getName(),
+                var_export($value, true)
+            )
+        );
     }
 
     private function cast(mixed $value): mixed

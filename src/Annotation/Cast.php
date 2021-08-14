@@ -70,11 +70,12 @@ final class Cast implements Transformation
         }
 
         if ($reflectionType instanceof ReflectionUnionType) {
-            $typeName = implode('|',
-                                array_map(
-                                    static fn(ReflectionNamedType $type) => $type->getName(),
-                                    $reflectionType->getTypes()
-                                )
+            $typeName = implode(
+                '|',
+                array_map(
+                    static fn(ReflectionNamedType $type) => $type->getName(),
+                    $reflectionType->getTypes()
+                )
             );
 
             return PhpType::fromName($typeName);

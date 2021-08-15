@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Dgame\DataTransferObject\Tests;
 
+use AssertionError;
 use Dgame\DataTransferObject\Tests\Stubs\SelfValidationStub;
 use PHPUnit\Framework\TestCase;
 use ReflectionException;
@@ -22,12 +23,12 @@ final class SelfValidationTest extends TestCase
      */
     public function testSelfValidation(array $input, SelfValidationStub $expected): void
     {
-        if ($expected->id <= 0) {
-            $this->expectErrorMessage('assert($this->id > 0)');
+        try {
+            $stub = SelfValidationStub::from($input);
+            $this->assertEquals($expected, $stub);
+        } catch (AssertionError $error) {
+            $this->assertEquals('assert($this->id > 0)', $error->getMessage());
         }
-
-        $stub = SelfValidationStub::from($input);
-        $this->assertEquals($expected, $stub);
     }
 
     public function provideSelfValidationData(): iterable

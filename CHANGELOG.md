@@ -4,7 +4,7 @@
 
 ### Added
 
-- [Transformations](/README.md/#Transformation) (e.g. [Cast](/README.md/#Cast))
+- [Transformations](/README.md/#Transformations) (e.g. [Cast](/README.md/#Cast))
 - [Optional](/README.md/#Optional)
 - [Path](/README.md/#Path)
 - [SelfValidation](/README.md/#SelfValidation)

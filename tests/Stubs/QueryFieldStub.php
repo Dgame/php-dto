@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Tests\Stubs;
 
 use Dgame\DataTransferObject\Annotation\Min;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class QueryFieldStub
 {
-    use From;
+    use DataTransfer;
 
     public function __construct(
         #[Min(1)] private string $query,

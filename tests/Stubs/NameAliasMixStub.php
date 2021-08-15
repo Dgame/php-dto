@@ -6,11 +6,11 @@ namespace Dgame\DataTransferObject\Tests\Stubs;
 
 use Dgame\DataTransferObject\Annotation\Alias;
 use Dgame\DataTransferObject\Annotation\Name;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class NameAliasMixStub
 {
-    use From;
+    use DataTransfer;
 
     #[Name('a')]
     #[Alias('z')]

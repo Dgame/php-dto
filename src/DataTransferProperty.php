@@ -7,13 +7,16 @@ namespace Dgame\DataTransferObject;
 use Dgame\DataTransferObject\Annotation\Alias;
 use Dgame\DataTransferObject\Annotation\Ignore;
 use Dgame\DataTransferObject\Annotation\Name;
+use Dgame\DataTransferObject\Annotation\Optional;
+use Dgame\DataTransferObject\Annotation\Path;
 use Dgame\DataTransferObject\Annotation\Reject;
 use Dgame\DataTransferObject\Annotation\Required;
-use InvalidArgumentException;
+use Dgame\DataTransferObject\Annotation\ValidationStrategy;
 use ReflectionException;
 use ReflectionMethod;
 use ReflectionParameter;
 use ReflectionProperty;
+use Safe\Exceptions\PcreException;
 use Throwable;
 
 /**
@@ -30,6 +33,7 @@ final class DataTransferProperty
     private object $instance;
     private bool $hasDefaultValue;
     private mixed $defaultValue;
+    private ValidationStrategy $validationStrategy;
 
     /**
      * @param ReflectionProperty    $property
@@ -39,9 +43,12 @@ final class DataTransferProperty
      */
     public function __construct(private ReflectionProperty $property, DataTransferObject $parent)
     {
+        $this->validationStrategy = $parent->getValidationStrategy();
+
         if (version_compare(PHP_VERSION, '8.1') < 0) {
             $property->setAccessible(true);
         }
+
         $this->ignore = $this->property->getAttributes(Ignore::class) !== [];
         $this->setNames();
 
@@ -92,30 +99,49 @@ final class DataTransferProperty
     public function setValueFrom(array &$input): void
     {
         foreach ($this->names as $name) {
-            if (!array_key_exists($name, $input)) {
+            $value = $this->handlePath($input);
+            if ($value === null && !array_key_exists($name, $input)) {
                 continue;
             }
 
             $this->handleRejected();
 
-            $value = $input[$name];
-            unset($input[$name]);
+            if ($value === null) {
+                $value = $input[$name];
+                unset($input[$name]);
+            }
 
-            $value = new DataTransferValue($value, $this->property);
+            $value = new DataTransferValue($value, $this->property, $this->validationStrategy);
             $this->assign($value->getValue());
 
             return;
         }
 
         $this->handleRequired();
+        $this->handleOptional();
+    }
 
-        if ($this->hasDefaultValue) {
-            $this->assign($this->defaultValue);
+    /**
+     * @param array<string, mixed> $input
+     *
+     * @return mixed
+     * @throws PcreException
+     */
+    private function handlePath(array &$input): mixed
+    {
+        foreach ($this->property->getAttributes(Path::class) as $attribute) {
+            /** @var Path $path */
+            $path  = $attribute->newInstance();
+            $value = $path->extract($input);
+            $key   = $path->getKey();
+            if ($value !== null && $key !== null) {
+                unset($input[$key]);
+            }
 
-            return;
+            return $value;
         }
 
-        throw $this->getMissingException();
+        return null;
     }
 
     private function handleRejected(): void
@@ -133,6 +159,31 @@ final class DataTransferProperty
             /** @var Required $required */
             $required = $attribute->newInstance();
             $required->execute();
+        }
+    }
+
+    private function handleOptional(): void
+    {
+        if ($this->hasDefaultValue && $this->defaultValue !== null) {
+            $this->assign($this->defaultValue);
+
+            return;
+        }
+
+        foreach ($this->property->getAttributes(Optional::class) as $attribute) {
+            /** @var Optional $optional */
+            $optional = $attribute->newInstance();
+            $value    = $optional->getValue($this->property);
+
+            $this->assign($value);
+
+            return;
+        }
+
+        if (!$this->hasDefaultValue) {
+            $this->handleMissingRequiredValue();
+        } else {
+            $this->assign($this->defaultValue);
         }
     }
 
@@ -176,12 +227,11 @@ final class DataTransferProperty
         $this->names = array_keys($names);
     }
 
-    private function getMissingException(): Throwable
+    private function handleMissingRequiredValue(): void
     {
-        return match (count($this->names)) {
-            0 => new InvalidArgumentException('Expected a value'),
-            1 => new InvalidArgumentException('Expected a value for "' . current($this->names) . '"'),
-            default => new InvalidArgumentException('Expected one of "' . implode(', ', $this->names) . '"')
+        match (count($this->names)) {
+            0, 1 => $this->validationStrategy->setFailure('Expected a value for {path}'),
+            default => $this->validationStrategy->setFailure('Expected one of "' . implode(', ', $this->names) . '"')
         };
     }
 }

@@ -6,11 +6,11 @@ namespace Dgame\DataTransferObject\Tests\Stubs;
 
 use Dgame\DataTransferObject\Annotation\Ignore;
 use Dgame\DataTransferObject\Annotation\Reject;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\DataTransfer;
 
 final class RejectStub
 {
-    use From;
+    use DataTransfer;
 
     #[Ignore]
     #[Reject(reason: 'The attribute "uuid" is not supposed to be set')]

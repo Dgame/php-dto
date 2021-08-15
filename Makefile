@@ -38,6 +38,8 @@ update-lock:
 	docker-compose exec $(DOCKER_SEARCH_SERVICE) composer update --lock
 update:
 	docker-compose exec $(DOCKER_SEARCH_SERVICE) composer update
+upgrade:
+	docker-compose exec $(DOCKER_SEARCH_SERVICE) composer upgrade
 validate:
 	docker-compose exec $(DOCKER_SEARCH_SERVICE) composer validate
 

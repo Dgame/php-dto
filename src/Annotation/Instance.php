@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Annotation;
 
 use Attribute;
-use InvalidArgumentException;
 
 #[Attribute(flags: Attribute::TARGET_PROPERTY)]
 final class Instance implements Validation
@@ -14,22 +13,24 @@ final class Instance implements Validation
     {
     }
 
-    public function validate(mixed $value): void
+    public function validate(mixed $value, ValidationStrategy $validationStrategy): void
     {
         if (is_array($value)) {
             foreach ($value as $item) {
-                $this->validate($item);
+                $this->validate($item, $validationStrategy);
             }
 
             return;
         }
 
         if (!is_object($value)) {
-            throw new InvalidArgumentException($this->message ?? var_export($value, true) . ' must be an object-instance of ' . $this->class);
+            $validationStrategy->setFailure($this->message ?? var_export($value, true) . ' must be an object-instance of ' . $this->class . ' in {path}');
+
+            return;
         }
 
         if (!($value instanceof $this->class)) {
-            throw new InvalidArgumentException($this->message ?? var_export($value, true) . ' is not an instance of ' . $this->class);
+            $validationStrategy->setFailure($this->message ?? var_export($value, true) . ' is not an instance of ' . $this->class . ' in {path}');
         }
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Dgame\DataTransferObject\Tests\Stubs;
 
-use Dgame\DataTransferObject\Annotation\Call;
-use Dgame\DataTransferObject\From;
+use Dgame\DataTransferObject\Annotation\Cast;
+use Dgame\DataTransferObject\DataTransfer;
 
 /**
  * Class FilterStub
@@ -13,12 +13,12 @@ use Dgame\DataTransferObject\From;
  */
 final class FilterStub
 {
-    use From;
+    use DataTransfer;
 
-    #[Call(class: FilterStubProvider::class, method: 'toInt')]
+    #[Cast(method: 'toInt', class: FilterStubProvider::class)]
     private int $id;
 
-    #[Call(class: FilterStubProvider::class)]
+    #[Cast(class: FilterStubProvider::class)]
     private array $filter = [];
 
     public function getId(): int

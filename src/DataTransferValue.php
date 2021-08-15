@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace Dgame\DataTransferObject;
 
-use Dgame\DataTransferObject\Annotation\Call;
+use Dgame\DataTransferObject\Annotation\Transformation;
 use Dgame\DataTransferObject\Annotation\Type;
 use Dgame\DataTransferObject\Annotation\Validation;
+use Dgame\DataTransferObject\Annotation\ValidationStrategy;
 use ReflectionAttribute;
 use ReflectionException;
 use ReflectionNamedType;
 use ReflectionProperty;
-use Safe\Exceptions\StringsException;
 use Throwable;
 
 final class DataTransferValue
@@ -20,11 +20,11 @@ final class DataTransferValue
      * @throws ReflectionException
      * @throws Throwable
      */
-    public function __construct(private mixed $value, private ReflectionProperty $property)
+    public function __construct(private mixed $value, private ReflectionProperty $property, ValidationStrategy $validationStrategy)
     {
-        $this->applyCallbacks();
+        $this->applyTransformations();
         $this->tryResolvingIntoObject();
-        $this->validate();
+        $this->validate($validationStrategy);
     }
 
     public function getValue(): mixed
@@ -32,15 +32,12 @@ final class DataTransferValue
         return $this->value;
     }
 
-    /**
-     * @throws ReflectionException
-     */
-    private function applyCallbacks(): void
+    private function applyTransformations(): void
     {
-        foreach ($this->property->getAttributes(Call::class) as $attribute) {
-            /** @var Call $call */
-            $call        = $attribute->newInstance();
-            $this->value = $call->with($this->value);
+        foreach ($this->property->getAttributes(Transformation::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
+            /** @var Transformation $transformation */
+            $transformation = $attribute->newInstance();
+            $this->value    = $transformation->transform($this->value, $this->property);
         }
     }
 
@@ -77,16 +74,13 @@ final class DataTransferValue
         $this->value = $dto->getInstance();
     }
 
-    /**
-     * @throws StringsException
-     */
-    private function validate(): void
+    private function validate(ValidationStrategy $validationStrategy): void
     {
         $typeChecked = false;
         foreach ($this->property->getAttributes(Validation::class, ReflectionAttribute::IS_INSTANCEOF) as $attribute) {
             /** @var Validation $validation */
             $validation = $attribute->newInstance();
-            $validation->validate($this->value);
+            $validation->validate($this->value, $validationStrategy);
 
             $typeChecked = $typeChecked || $validation instanceof Type;
         }
@@ -97,7 +91,7 @@ final class DataTransferValue
 
         $type = $this->property->getType();
         if ($type instanceof ReflectionNamedType) {
-            Type::from($type)->validate($this->value);
+            Type::from($type)->validate($this->value, $validationStrategy);
         }
     }
 }

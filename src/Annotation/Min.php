@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Annotation;
 
 use Attribute;
-use InvalidArgumentException;
 
 #[Attribute(flags: Attribute::TARGET_PROPERTY)]
 final class Min implements Validation
@@ -14,11 +13,11 @@ final class Min implements Validation
     {
     }
 
-    public function validate(mixed $value): void
+    public function validate(mixed $value, ValidationStrategy $validationStrategy): void
     {
         if ((is_int($value) || is_float($value))) {
             if ($value < $this->minValue) {
-                throw new InvalidArgumentException($this->message ?? var_export($value, true) . ' is < ' . $this->minValue);
+                $validationStrategy->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must be >= ' . $this->minValue);
             }
 
             return;
@@ -26,14 +25,14 @@ final class Min implements Validation
 
         if (is_string($value)) {
             if (strlen($value) < $this->minValue) {
-                throw new InvalidArgumentException($this->message ?? var_export($value, true) . ' is < ' . $this->minValue);
+                $validationStrategy->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must have at least a length of ' . $this->minValue);
             }
 
             return;
         }
 
         if (is_array($value) && count($value) < $this->minValue) {
-            throw new InvalidArgumentException($this->message ?? var_export($value, true) . ' is < ' . $this->minValue);
+            $validationStrategy->setFailure($this->message ?? 'Value ' . var_export($value, true) . ' of {path} must have at least a length of ' . $this->minValue);
         }
     }
 }

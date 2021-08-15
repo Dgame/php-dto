@@ -499,8 +499,7 @@ assert($foo->id === 23);
 
 ## Path
 
-Ever had the pleasure dealing with XML's `#text` or JSON's `$value` attributes? Or did you ever wanted to extract a value from a provided array?
-`Path` to the rescue:
+Did you ever wanted to extract a value from a provided array? `Path` to the rescue:
 
 ```php
 final class Person
@@ -512,6 +511,8 @@ final class Person
 }
 ```
 
+It helps while with JSON's special `$value` attribute
+
 ```php
 final class Person
 {
@@ -521,6 +522,8 @@ final class Person
     public bool $married;
 }
 ```
+
+and with XML's `#text`.
 
 ```php
 final class Person
@@ -534,6 +537,8 @@ final class Person
 
 ---
 
+But we can do even more. You can choose which parts of the field are taken
+
 ```php
 final class Person
 {
@@ -543,6 +548,8 @@ final class Person
     public array $firstChild = [];
 }
 ```
+
+and can even assign them directly to an object:
 
 ```php
 final class Person

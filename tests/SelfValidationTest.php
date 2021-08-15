@@ -23,7 +23,6 @@ final class SelfValidationTest extends TestCase
     public function testSelfValidation(array $input, SelfValidationStub $expected): void
     {
         if ($expected->id <= 0) {
-            $this->expectError();
             $this->expectErrorMessage('assert($this->id > 0)');
         }
 

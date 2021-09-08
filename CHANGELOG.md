@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.4.0 - 10.09.2021
+
+### Added
+
+- [Boolean](/README.md/#Boolean)
+- [Date](/README.md/#Date)
+- [In](/README.md/#In)
+- [Matches](/README.md/#Matches)
+- [NotIn](/README.md/#NotIn)
+- [Numeric](/README.md/#Numeric)
+- [Trim](/README.md/#Trim)
+
+### Changed
+
+ - `finalize`of `DataTransferObject` is now private an will be called at the end of `from`.
+
 ## v0.3.0 - 15.08.2021
 
 ### Added

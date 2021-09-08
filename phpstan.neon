@@ -14,6 +14,7 @@ parameters:
     checkTooWideReturnTypesInProtectedAndPublicMethods: true
     checkUninitializedProperties: true
     checkMissingCallableSignature: true
+    checkExplicitMixed: true
     level: max
     paths:
         - src

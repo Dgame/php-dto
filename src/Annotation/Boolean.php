@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dgame\DataTransferObject\Annotation;
 
 use Attribute;
+use function Dgame\Cast\Assume\bool;
 use ReflectionProperty;
 
 #[Attribute(Attribute::TARGET_PROPERTY)]
@@ -16,8 +17,7 @@ final class Boolean implements Validation, Transformation
 
     public function validate(mixed $value, ValidationStrategy $validationStrategy): void
     {
-        $result = filter_var($value, filter: FILTER_VALIDATE_BOOL, options: FILTER_NULL_ON_FAILURE);
-        if ($result === null) {
+        if (bool($value) === null) {
             $validationStrategy->setFailure(
                 strtr(
                     $this->message ?? 'Value {value} of {path} is not a bool',
@@ -29,8 +29,6 @@ final class Boolean implements Validation, Transformation
 
     public function transform(mixed $value, ReflectionProperty $property): mixed
     {
-        $result = filter_var($value, filter: FILTER_VALIDATE_BOOL, options: FILTER_NULL_ON_FAILURE);
-
-        return $result ?? $value;
+        return bool($value) ?? $value;
     }
 }

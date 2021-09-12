@@ -10,7 +10,7 @@ use Attribute;
 final class In implements Validation
 {
     /**
-     * @param array<mixed, mixed> $values
+     * @param array<int|string, mixed> $values
      */
     public function __construct(private array $values, private ?string $message = null)
     {

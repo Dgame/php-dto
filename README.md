@@ -497,6 +497,144 @@ $foo = Foo::from([]);
 assert($foo->id === 23);
 ```
 
+## Numeric
+
+You have `int` or `float` properties but aren't sure if those aren't delivered as e.g. `string`? `Numeric` to the rescue! It will translate the value to a numeric representation (to `int` or `float`):
+
+```php
+use Dgame\DataTransferObject\Annotation\Numeric;
+
+final class Foo
+{
+    use DataTransfer;
+    
+    #[Numeric(message: 'id must be numeric')]
+    public int $id;
+}
+
+$foo = Foo::from(['id' => '23']);
+assert($foo->id === 23);
+```
+
+## Boolean
+
+You have `bool` properties but aren't sure if those aren't delivered as `string` or `int`? `Boolean` can help you with that!
+
+```php
+use Dgame\DataTransferObject\Annotation\Boolean;
+
+final class Foo
+{
+    use DataTransfer;
+    
+    #[Boolean(message: 'checked must be a bool')]
+    public bool $checked;
+    #[Boolean(message: 'verified must be a bool')]
+    public bool $verified;
+}
+
+$foo = Foo::from(['checked' => 'yes', 'verified' => 0]);
+assert($foo->checked === true);
+assert($foo->verified === false);
+```
+
+## Date
+
+You want a `DateTime` but got a string? No problem:
+
+```php
+use Dgame\DataTransferObject\Annotation\Date;
+
+final class Foo
+{
+    use DataTransfer;
+    
+    #[Date(format: 'd.m.Y', message: 'Your birthday must be a date')]
+    public bool $birthday;
+}
+
+$foo = Foo::from(['birthday' => '19.09.1979']);
+assert($foo->birthday === DateTime::createFromFormat('d.m.Y', '19.09.1979'));
+```
+
+
+## In
+
+Your value must be one of a specific range or enumeration? You can ensure that with `In`:
+
+```php
+use Dgame\DataTransferObject\Annotation\In;
+
+final class Foo
+{
+    use DataTransfer;
+    
+    #[In(values: ['beginner', 'advanced', 'difficult'], message: 'Must be either "beginner", "advanced" or "difficult"')]
+    public string $difficulty;
+}
+
+Foo::from(['difficulty' => 'foo']); // will throw a error, since difficulty is not in the provided values
+$foo = Foo::from(['difficulty' => 'advanced']);
+assert($foo->difficulty === 'advanced');
+```
+
+## NotIn
+
+Your value must **not** be one of a specific range or enumeration? You can ensure that with `NotIn`:
+
+```php
+use Dgame\DataTransferObject\Annotation\NotIn;
+
+final class Foo
+{
+    use DataTransfer;
+    
+    #[NotIn(values: ['holy', 'shit', 'wtf'], message: 'Must not be a swear word')]
+    public string $word;
+}
+```
+
+## Matches
+
+You must be sure that your values match a specific pattern? You can do that for **all scalar** values by using `Matches`:
+
+```php
+use Dgame\DataTransferObject\Annotation\Matches;
+
+final class Foo
+{
+    use DataTransfer;
+    
+    #[Matches(pattern: '/^[a-z]+\w*/', message: 'Your name must start with a-z')]
+    public string $name;
+    
+    #[Matches(pattern: '/[1-9][0-9]+/', message: 'products must be at least 10')]
+    public int $products;
+}
+
+Foo::from(['name' => '_', 'products' => 99]); // will throw a error, since name does not start with a-z
+Foo::from(['name' => 'John', 'products' => 9]); // will throw a error, since products must be at least 10
+```
+
+## Trim
+
+You have to make sure, that `string` values are trimmed? No worries, we have `Trim`:
+
+```php
+use Dgame\DataTransferObject\Annotation\Trim;
+
+final class Foo
+{
+    use DataTransfer;
+    
+    #[Trim]
+    public string $name;
+}
+
+$foo = Foo::from(['name' => ' John   ']);
+assert($foo->name === 'John');
+```
+
 ## Path
 
 Did you ever wanted to extract a value from a provided array? `Path` to the rescue:

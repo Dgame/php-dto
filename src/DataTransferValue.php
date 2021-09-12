@@ -85,7 +85,7 @@ final class DataTransferValue
             $typeChecked = $typeChecked || $validation instanceof Type;
         }
 
-        if ($typeChecked) {
+        if ($typeChecked || $validationStrategy->hasFailures()) {
             return;
         }
 

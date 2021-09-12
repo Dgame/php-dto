@@ -17,7 +17,6 @@ trait DataTransfer
     {
         $dto = new DataTransferObject(static::class);
         $dto->from($input);
-        $dto->finalize($input);
 
         return $dto->getInstance();
     }

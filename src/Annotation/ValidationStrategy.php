@@ -38,6 +38,11 @@ class ValidationStrategy
         }
     }
 
+    public function hasFailures(): bool
+    {
+        return $this->collection->hasFailures();
+    }
+
     public function handle(): void
     {
         $this->handler->handle($this->collection);

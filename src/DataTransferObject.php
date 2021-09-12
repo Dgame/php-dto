@@ -67,6 +67,8 @@ final class DataTransferObject
         }
 
         $this->validationStrategy->popPath();
+
+        $this->finalize($input);
     }
 
     /**
@@ -74,7 +76,7 @@ final class DataTransferObject
      *
      * @throws ReflectionException
      */
-    public function finalize(array $input): void
+    private function finalize(array $input): void
     {
         $this->validationStrategy->handle();
 
@@ -133,7 +135,8 @@ final class DataTransferObject
 
         $this->validationStrategy ??= new ValidationStrategy(
             collection: new FailureCollection(),
-            handler:    new FailureHandler()
+            handler:    new FailureHandler(),
+            failFast:   true
         );
     }
 }

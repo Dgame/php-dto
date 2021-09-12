@@ -16,6 +16,7 @@
     ],
     "require": {
         "php": "^8.0",
+        "dgame/php-cast": "^0.1.0",
         "dgame/php-type": "^1.0",
         "thecodingmachine/safe": "^1.3"
     },

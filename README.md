@@ -544,13 +544,14 @@ You want a `DateTime` but got a string? No problem:
 
 ```php
 use Dgame\DataTransferObject\Annotation\Date;
+use \DateTime;
 
 final class Foo
 {
     use DataTransfer;
     
     #[Date(format: 'd.m.Y', message: 'Your birthday must be a date')]
-    public bool $birthday;
+    public DateTime $birthday;
 }
 
 $foo = Foo::from(['birthday' => '19.09.1979']);

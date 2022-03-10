@@ -1,12 +1,12 @@
 {
     "name": "dgame/php-dto",
-    "type": "package",
     "description": "A data transfer object inspired by Rust's serde",
+    "license": "MIT",
+    "type": "package",
     "keywords": [
         "DTO",
         "data transfer object"
     ],
-    "license": "MIT",
     "authors": [
         {
             "name": "Randy Schütt",
@@ -36,15 +36,8 @@
         "thecodingmachine/phpstan-safe-rule": "^1.0",
         "thecodingmachine/phpstan-strict-rules": "^0.12"
     },
-    "config": {
-        "optimize-autoloader": true,
-        "platform": {
-            "php": "8.0"
-        },
-        "preferred-install": "dist",
-        "process-timeout": 0,
-        "sort-packages": true
-    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
     "autoload": {
         "psr-4": {
             "Dgame\\DataTransferObject\\": "src/"
@@ -55,8 +48,19 @@
             "Dgame\\DataTransferObject\\Tests\\": "tests/"
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
+    "config": {
+        "allow-plugins": {
+            "ergebnis/composer-normalize": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        },
+        "optimize-autoloader": true,
+        "platform": {
+            "php": "8.0"
+        },
+        "preferred-install": "dist",
+        "process-timeout": 0,
+        "sort-packages": true
+    },
     "scripts": {
         "coverage": "phpunit --coverage-clover=coverage",
         "lint": "phpcstd --continue",

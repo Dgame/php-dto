@@ -66,7 +66,7 @@ final class Cast implements Transformation
     {
         $reflectionType = $property->getType();
         if ($reflectionType instanceof ReflectionNamedType) {
-            return PhpType::fromReflection($reflectionType);
+            return PhpType::fromReflectionType($reflectionType);
         }
 
         if ($reflectionType instanceof ReflectionUnionType) {

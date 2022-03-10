@@ -25,7 +25,7 @@ final class Optional
             throw new InvalidArgumentException('Cannot cast to unknown type');
         }
 
-        $propertyType = PhpType::fromReflection($reflectionNamedType);
+        $propertyType = PhpType::fromReflectionType($reflectionNamedType);
 
         return $this->value ?? ($propertyType instanceof Defaultable ? $propertyType->getDefaultValue() : $this->value);
     }
